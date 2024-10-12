@@ -20,8 +20,9 @@ const run = async (options = { querySelector: '.merjong' }) => {
 const arrangeMPSZ = (mpsz) => {
     mpsz = mpsz.replaceAll("?", "Q");
     const result = [];
-    const mpszRegex = /[0-9XQ][0-9XQ'"]*[mspzxq]|-|['"]?[xq]/g;
-    const suitGroups = mpsz.match(mpszRegex) || [];
+    const suitGroupRegex = /[0-9XQ][0-9XQ'"]*[mspzxq]|-|['"]?[xq]/g;
+    const numberQuoteRegex = /[0-9XQ]['"]?/g;
+    const suitGroups = mpsz.match(suitGroupRegex) || [];
     suitGroups.forEach(sameSuitGroup => {
         switch (sameSuitGroup) {
             case 'x':
@@ -30,16 +31,11 @@ const arrangeMPSZ = (mpsz) => {
                 result.push(sameSuitGroup);
                 break;
             default:
-                const numbers = sameSuitGroup.slice(0, -1);
+                const numbersWithQuote = sameSuitGroup.match(numberQuoteRegex) || [];
                 const suit = sameSuitGroup.slice(-1);
-                for (let i = 0; i < numbers.length; i++) {
-                    const char = numbers[i];
-                    if (char === "'" || char === '"') {
-                        continue;
-                    }
-                    const nextChar = numbers[i + 1] || false;
-                    result.push(`${char}${(nextChar === "'" || nextChar === '"') ? nextChar : ''}${suit}`);
-                }
+                numbersWithQuote.forEach(numberWithQuote => {
+                    result.push(`${numberWithQuote}${suit}`);
+                });
                 break;
         }
     });
