@@ -57,23 +57,21 @@ const render = (mpsz) => {
     let svgContent = '';
     const arrMPSZ = arrangeMPSZ(mpsz);
     let xPosition = 0;
-    arrMPSZ.forEach((tile, index) => {
-        switch (tile) {
-            case '-':
-                xPosition = xPosition + (tileWidth / 2);
-                break;
-            default:
-                if (false) {
-                    // svgContent += `<image href="${tileDesigns['base']}" x="${xPosition}" y="0" width="${tileHeight}" height="${tileHeight}" /><image href="${tileDesigns[tile]}" x="${xPosition}" y="0" width="${tileHeight}" height="${tileHeight}" />`
-                    // xPosition = xPosition + tileHeight + 1
-                }
-                else {
-                    svgContent += `<image href="${tileDesigns['base']}" x="${xPosition}" y="0" width="${tileWidth}" height="${tileHeight}" /><image href="${tileDesigns[tile]}" x="${xPosition}" y="0" width="${tileWidth}" height="${tileHeight}" />`;
-                    xPosition = xPosition + tileWidth + 1;
-                }
+    arrMPSZ.forEach((tileKey, index) => {
+        if (tileKey === '-') {
+            xPosition = xPosition + (tileWidth / 2);
+        }
+        else if (/^\d?['"][a-z]$/.test(tileKey)) {
+            const tileKeyWoQuote = tileKey.replace(/['"]/g, '');
+            svgContent += `<image href="${tileDesigns['base']}" x="${xPosition}" y="${tileHeight}" width="${tileWidth}" height="${tileHeight}" transform="rotate(-90, ${xPosition}, ${tileHeight})" /><image href="${tileDesigns[tileKeyWoQuote]}" x="${xPosition}" y="${tileHeight}" width="${tileWidth}" height="${tileHeight}" transform="rotate(-90, ${xPosition}, ${tileHeight})" />`;
+            xPosition = xPosition + tileHeight + 1;
+        }
+        else {
+            svgContent += `<image href="${tileDesigns['base']}" x="${xPosition}" y="0" width="${tileWidth}" height="${tileHeight}" /><image href="${tileDesigns[tileKey]}" x="${xPosition}" y="0" width="${tileWidth}" height="${tileHeight}" />`;
+            xPosition = xPosition + tileWidth + 1;
         }
     });
-    return `<svg width="${xPosition - 1}" height="${tileHeight + 2}">${svgContent}</svg>`;
+    return `<svg width="${xPosition - 1}" height="${tileHeight}">${svgContent}</svg>`;
 };
 const merjong = {
     run
