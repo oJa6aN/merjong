@@ -14,7 +14,9 @@ if (typeof document !== 'undefined') {
 }
 
 const runThrowsErrors = async ({ querySelector = '.mermaid' }: RunOptions) => {
-  const nodesToProcess: ArrayLike<HTMLElement> = document.querySelectorAll(querySelector)
+  let nodesToProcess: ArrayLike<HTMLElement>
+  nodesToProcess = document.querySelectorAll(querySelector)
+
   for (const element of Array.from(nodesToProcess)) {
     const mpsz = element.innerHTML.trim()
     const svg = await render(mpsz)
@@ -31,7 +33,7 @@ const arrangeMPSZ = (mpsz: string) => {
 
   const arrMPSZ: string[] = []
   const suitGroupRegex = /[0-9XQ][0-9XQ'"]*[mspzxq]|-|['"]?[xq]/g
-  const numberQuoteRegex = /[0-9XQ]['"]?/g
+  const numberQuoteRegex = /[0-9XQ](?:'{0,2}|")/g
 
   const suitGroups = mpsz.match(suitGroupRegex) || []
   suitGroups.forEach(sameSuitGroup => {
@@ -60,37 +62,60 @@ const arrangeMPSZ = (mpsz: string) => {
 }
 
 const render = (mpsz: string) => {
-  const theme = themes.default.getThemeVariables()
-  const tileDesigns = theme.tileDesigns
-  const tileWidth = 36
-  const tileHeight = 48
-  let xPosition = 0
+  // const theme = themes.default.getThemeVariables()
+  // const tileDesigns = theme.tileDesigns
+  // const tileWidth = 36
+  // const tileHeight = 48
+  // let xPosition = 0
 
-  let svgContent = ''
-  const arrMPSZ = arrangeMPSZ(mpsz)
+  // let svgContent = ''
+  // const arrMPSZ = arrangeMPSZ(mpsz)
+  // let preTileKey = ''
 
-  arrMPSZ.forEach((tileKey) => {
-    if (tileKey === '-') {
-      xPosition = xPosition + (tileWidth / 2)
-    } else if (/^\d?['"][a-z]$/.test(tileKey)) {
-      const tileKeyWoQuote = tileKey.replace(/['"]/g, '')
-      svgContent += `<image href="${tileDesigns['base']}" x="${xPosition}" y="${tileHeight}" width="${tileWidth}" height="${tileHeight}" transform="rotate(-90, ${xPosition}, ${tileHeight})" /><image href="${tileDesigns[tileKeyWoQuote]}" x="${xPosition}" y="${tileHeight}" width="${tileWidth}" height="${tileHeight}" transform="rotate(-90, ${xPosition}, ${tileHeight})" />`
-      xPosition = xPosition + tileHeight + 1
-    } else {
-      svgContent += `<image href="${tileDesigns['base']}" x="${xPosition}" y="0" width="${tileWidth}" height="${tileHeight}" /><image href="${tileDesigns[tileKey]}" x="${xPosition}" y="0" width="${tileWidth}" height="${tileHeight}" />`
-      xPosition = xPosition + tileWidth + 1
-    }
-  })
+  // for (let i = 0;i < arrMPSZ.length;i++) {
+  //   const tileKey = arrMPSZ[i]
+  //   if (tileKey === '-') {
+  //     xPosition = xPosition + (tileWidth / 2)
+  //   } else if (/^\d?['][a-z]$/.test(tileKey)) {
 
-  return `<svg width="${xPosition - 1}" height="${tileHeight}">${svgContent}</svg>`
+  //   } else {
+  //     svgContent += `<image href="${tileDesigns['base']}" x="${xPosition}" y="0" width="${tileWidth}" height="${tileHeight}" /><image href="${tileDesigns[tileKey]}" x="${xPosition}" y="0" width="${tileWidth}" height="${tileHeight}" />`
+  //     xPosition = xPosition + tileWidth + 1
+  //   }
+
+  // }
+  // // arrMPSZ.forEach((tileKey) => {
+  // //   if (tileKey === '-') {
+  // //     xPosition = xPosition + (tileWidth / 2)
+  // //   } else if (/^\d?['][a-z]$/.test(tileKey)) {
+  // //     if (
+  // //       /^\d?['][a-z]$/.test(tileKey)
+  // //       && (tileKey === preTileKey
+  // //         || (tileKey.slice(-1) === preTileKey.slice(-1)
+  // //           && /^[05X]['][a-z]$/.test(tileKey)
+  // //           && /^[05X]['][a-z]$/.test(preTileKey))
+  // //       )
+  // //     ) {
+  // //       xPosition = xPosition - tileHeight - 1
+  // //     }
+  // //     const tileKeyWoQuote = tileKey.replace(/['"]/g, '')
+  // //     svgContent += `<image href="${tileDesigns['base']}" x="${xPosition}" y="${tileHeight}" width="${tileWidth}" height="${tileHeight}" transform="rotate(-90, ${xPosition}, ${tileHeight})" /><image href="${tileDesigns[tileKeyWoQuote]}" x="${xPosition}" y="${tileHeight}" width="${tileWidth}" height="${tileHeight}" transform="rotate(-90, ${xPosition}, ${tileHeight})" />`
+  // //     xPosition = xPosition + tileHeight + 1
+  // //   } else {
+  // //     svgContent += `<image href="${tileDesigns['base']}" x="${xPosition}" y="0" width="${tileWidth}" height="${tileHeight}" /><image href="${tileDesigns[tileKey]}" x="${xPosition}" y="0" width="${tileWidth}" height="${tileHeight}" />`
+  // //     xPosition = xPosition + tileWidth + 1
+  // //   }
+  // //   preTileKey = tileKey
+  // // })
+
+  // return `<svg width="${xPosition - 1}" height="${tileHeight}">${svgContent}</svg>`
+  return ""
 }
 
-export type Merjong = {
-  run: typeof run
-}
-
-const merjong: Merjong = {
+const merjong = {
   run
 }
 
 export default merjong
+
+console.log(arrangeMPSZ(`X5'0''Xm`))
