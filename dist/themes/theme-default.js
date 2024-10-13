@@ -1,9 +1,7 @@
 class Theme {
-    backgroundColor;
     tileDesigns;
     darkMode;
     constructor() {
-        this.backgroundColor = '#008000';
         this.tileDesigns = {
             "base": "https://raw.githubusercontent.com/FluffyStuff/riichi-mahjong-tiles/26e127ba2117f45cdce5ea0225748cc0cfad3169/Regular/Front.svg",
             "Q": "https://raw.githubusercontent.com/FluffyStuff/riichi-mahjong-tiles/26e127ba2117f45cdce5ea0225748cc0cfad3169/Regular/Blank.svg",
@@ -50,6 +48,5 @@ class Theme {
     }
 }
 export const getThemeVariables = () => {
-    const theme = new Theme();
-    return theme;
+    return new Theme();
 };

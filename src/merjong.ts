@@ -27,9 +27,9 @@ const run = async (options: RunOptions = { querySelector: '.merjong' }) => {
 }
 
 const arrangeMPSZ = (mpsz: string) => {
-  mpsz = mpsz.replaceAll("?", "Q")
+  mpsz = mpsz.replaceAll('?', 'Q')
 
-  const result: string[] = []
+  const arrMPSZ: string[] = []
   const suitGroupRegex = /[0-9XQ][0-9XQ'"]*[mspzxq]|-|['"]?[xq]/g
   const numberQuoteRegex = /[0-9XQ]['"]?/g
 
@@ -37,19 +37,26 @@ const arrangeMPSZ = (mpsz: string) => {
   suitGroups.forEach(sameSuitGroup => {
     switch (sameSuitGroup) {
       case 'x': case 'q': case '-':
-        result.push(sameSuitGroup)
+        arrMPSZ.push(sameSuitGroup)
         break
       default:
-        const numbersWithQuote = sameSuitGroup.match(numberQuoteRegex) || []
         const suit = sameSuitGroup.slice(-1)
-
+        const numbersWithQuote = sameSuitGroup.match(numberQuoteRegex) || []
         numbersWithQuote.forEach(numberWithQuote => {
-          result.push(`${numberWithQuote}${suit}`)
+          switch (numberWithQuote[0]) {
+            case 'Q':
+              arrMPSZ.push('q')
+              break
+            case 'X':
+              arrMPSZ.push('x')
+              break
+            default:
+              arrMPSZ.push(`${numberWithQuote}${suit}`)
+          }
         })
-        break
     }
   })
-  return result
+  return arrMPSZ
 }
 
 const render = (mpsz: string) => {
@@ -61,12 +68,25 @@ const render = (mpsz: string) => {
   let svgContent = ''
   const arrMPSZ = arrangeMPSZ(mpsz)
 
+  let xPosition = 0
   arrMPSZ.forEach((tile, index) => {
-    const xPosition = index * (tileWidth + 1) + 1
-    svgContent += `<image href="${tileDesigns['base']}" x="${xPosition}" y="1" width="${tileWidth}" height="${tileHeight}" /><image href="${tileDesigns[tile]}" x="${xPosition}" y="1" width="${tileWidth}" height="${tileHeight}" />`
+    switch (tile) {
+      case '-':
+        xPosition = xPosition + (tileWidth / 2)
+        break
+      default:
+        if (false) {
+          // svgContent += `<image href="${tileDesigns['base']}" x="${xPosition}" y="0" width="${tileHeight}" height="${tileHeight}" /><image href="${tileDesigns[tile]}" x="${xPosition}" y="0" width="${tileHeight}" height="${tileHeight}" />`
+          // xPosition = xPosition + tileHeight + 1
+        } else {
+          svgContent += `<image href="${tileDesigns['base']}" x="${xPosition}" y="0" width="${tileWidth}" height="${tileHeight}" /><image href="${tileDesigns[tile]}" x="${xPosition}" y="0" width="${tileWidth}" height="${tileHeight}" />`
+          xPosition = xPosition + tileWidth + 1
+        }
+
+    }
   })
 
-  return `<svg  style="background-color: #008800" width="${(tileWidth + 1) * arrMPSZ.length + 1}" height="${tileHeight + 2}">${svgContent}</svg>`
+  return `<svg width="${xPosition - 1}" height="${tileHeight + 2}">${svgContent}</svg>`
 }
 
 export type Merjong = {
